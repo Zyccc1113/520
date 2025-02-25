@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>寻找爱心</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffe6ee, #fff0f5);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: '楷体', cursive;
+            overflow: hidden;
+        }
+
+        .game-container {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            font-size: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+        }
+
+        .icon:hover {
+            animation: bounce 0.5s ease-in-out;
+        }
+
+        .decor {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            opacity: 0.3;
+            font-size: 30px;
+        }
+
+        .message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-size: 20px;
+            color: #ff6b6b;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 图标 -->
+        <div class="icon" id="icon1">⭐</div>
+        <div class="icon" id="icon2">🌙</div>
+        <div class="icon" id="icon3">☀️</div>
+        <div class="icon" id="icon4">❤️</div>
+        <div class="icon" id="icon5">☁️</div>
+        <div class="icon" id="icon6">🌺</div>
+        <div class="icon" id="icon7">🍀</div>
+        <div class="icon" id="icon8">🎈</div>
+        <div class="icon" id="icon9">🌷</div>
+        <div class="icon" id="icon10">🐞</div>
+    </div>
+
+    <!-- 小装饰图案 -->
+    <div class="decor decor1">🌸</div>
+    <div class="decor decor2">🦋</div>
+    <div class="decor decor3">🍃</div>
+    <div class="decor decor4">🌟</div>
+    <div class="decor decor5">🌼</div>
+    <div class="decor decor6">🐝</div>
+    <div class="decor decor7">🌻</div>
+    <div class="decor decor8">🍄</div>
+
+    <!-- 提示框 -->
+    <div class="message" id="message">你找到了我的心，我也找到了我的爱，就是你</div>
+
+    <script>
+        // 随机排列图标，确保不重叠
+        const icons = document.querySelectorAll('.icon');
+        const decor = document.querySelectorAll('.decor');
+        const positions = new Set(); // 用于存储已占用的位置
+
+        // 初始化图标位置
+        icons.forEach(icon => {
+            let left, top;
+            do {
+                left = Math.random() * 80 + 10; // 10% 到 90% 之间
+                top = Math.random() * 80 + 10;
+            } while (isOverlapping(left, top));
+            positions.add(`${left},${top}`);
+            icon.style.left = `${left}%`;
+            icon.style.top = `${top}%`;
+            startRandomMovement(icon); // 为每个图标设置不同的运动规则
+        });
+
+        // 初始化装饰图案位置
+        decor.forEach(d => {
+            let left, top;
+            do {
+                left = Math.random() * 80 + 10;
+                top = Math.random() * 80 + 10;
+            } while (isOverlapping(left, top));
+            positions.add(`${left},${top}`);
+            d.style.left = `${left}%`;
+            d.style.top = `${top}%`;
+            startRandomMovement(d); // 为每个装饰图案设置不同的运动规则
+        });
+
+        // 检查是否重叠
+        function isOverlapping(left, top) {
+            for (const pos of positions) {
+                const [x, y] = pos.split(',').map(Number);
+                if (Math.abs(left - x) < 10 && Math.abs(top - y) < 10) {
+                    return true; // 如果距离太近，视为重叠
+                }
+            }
+            return false;
+        }
+
+        // 为每个图案设置不同的运动规则
+        function startRandomMovement(element) {
+            const duration = Math.random() * 3 + 2; // 2 到 5 秒（加快速度）
+            const xRange = Math.random() * 80 + 40; // 40% 到 120% 的横向运动范围（增大幅度）
+            const yRange = Math.random() * 80 + 40; // 40% 到 120% 的纵向运动范围（增大幅度）
+            const delay = Math.random() * 1; // 0 到 1 秒的延迟
+
+            element.style.animation = `moveAround ${duration}s linear ${delay}s infinite`;
+            element.style.setProperty('--x-range', `${xRange}%`);
+            element.style.setProperty('--y-range', `${yRange}%`);
+        }
+
+        // 动态添加动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes moveAround {
+                0% { transform: translate(0, 0); }
+                25% { transform: translate(var(--x-range), var(--y-range)); }
+                50% { transform: translate(calc(-1 * var(--x-range)), calc(-1 * var(--y-range))); }
+                75% { transform: translate(var(--x-range), calc(-1 * var(--y-range))); }
+                100% { transform: translate(0, 0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 找到爱心时的提示
+        const heartIcon = document.getElementById('icon4');
+        const message = document.getElementById('message');
+
+        heartIcon.addEventListener('click', () => {
+            message.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
